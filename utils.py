@@ -3,6 +3,7 @@ import pandas as pd
 
 from prophet import Prophet
 from alibi_detect.od import SpectralResidual,IForest
+from pycaret.anomaly import *
 import numpy as np
 import warnings
 import matplotlib.pyplot as plt
@@ -118,3 +119,39 @@ def alibi_anomaly_detection( sensor_name: str, method_name=None):
     print("Plotting finished")
 
 # alibi_anomaly_detection(sensor_name="sensor_02", method_name="IForest")
+
+def train_pycaret_anomaly_model(model_name:str):
+    iforest = create_model(model_name, fraction = 0.1)
+    iforest_results = assign_model(iforest)
+    iforest_results.head()
+    return iforest_results
+
+def make_pycaret_chart(sensor_name: str, df_plot: pd.DataFrame):
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(20,10))
+    plt.plot(df_plot[sensor_name], label="Original Data")
+    outlier_dates_stoc = df_plot[df_plot['Anomaly'] == 1].index
+    y_values_stoc = [df_plot.loc[i][sensor_name] for i in outlier_dates_stoc]
+    plt.scatter(x=outlier_dates_stoc, y = y_values_stoc, color="yellow", label="Detected Anomalies")
+    plt.scatter(x=df_plot[df_plot["machine_status"]=="BROKEN"].index, y = df_plot[df_plot["machine_status"]=="BROKEN"][sensor_name], color="black")
+    graph_title = "Graph of " + sensor_name
+    plt.title(graph_title)
+    plt.legend()
+
+# Calculating Score of Clustering algorithm
+def calculate_accuracy(df_results: pd.DataFrame):
+    df_results["encoded_status"] = df_results["machine_status"].copy()
+    df_results["encoded_status"] = df_results["encoded_status"].replace("RECOVERING", 1)
+    df_results["encoded_status"] = df_results["encoded_status"].replace("BROKEN", 1)
+    df_results["encoded_status"] = df_results["encoded_status"].replace("NORMAL", 0)
+
+    true_count = 0
+    for i in range(len(df_results["encoded_status"])):
+        if df_results["encoded_status"][i] == df_results["Anomaly"][i]:
+            true_count += 1
+    true_accuracy = true_count/ len(df_results)
+    print(f"Accuracy:  {true_accuracy}")
+
+    return true_accuracy
+
+# make_pycaret_chart("sensor_20", Stoc_results)
