@@ -14,6 +14,15 @@ pip install -r requirements.txt
 # Dataset
 * Link to the dataset: https://www.kaggle.com/nphantawee/pump-sensor-data
 * Download and add dataset csv file inside datasets folder
-
+* Folder Structure:
+```
+  Pump_anomaly_detection
+    |_ datasets
+      |_ sensors.csv
+    -Jupter notebook
+    -README.md
+    -Requirements.txt
+    -utils.py
+``` 
 
 
