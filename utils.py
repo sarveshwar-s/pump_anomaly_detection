@@ -111,11 +111,14 @@ def alibi_anomaly_detection( sensor_name: str, method_name=None):
     anomalies_index = df1[df1["machine_status"]=="BROKEN"][sensor_name].index
     anomalies_values = df1[df1["machine_status"]=="BROKEN"][sensor_name].values
     
+    plt.figure(figsize=(20,10))
     
     plt.plot(df[sensor_name].values, label="Original data")
     plt.plot(scores, label="Anomaly Scores")
     plt.scatter(x=anomalies_index, y=anomalies_values, color="black", label = "Original Status: BROKEN")
-
+    
+    plt.legend()
+    
     print("Plotting finished")
 
 # alibi_anomaly_detection(sensor_name="sensor_02", method_name="IForest")
